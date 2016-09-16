@@ -1,6 +1,6 @@
 {
   "name": "thexa4-backup_hubic",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "thexa4",
   "summary": "Configures backups using Hubic",
   "license": "MIT",
@@ -10,6 +10,12 @@
   "dependencies": [
     {"name":"thexa4-pki","version_requirement":">= 0.1.0"},
     {"name":"thexa4-backup","version_requirement":">= 0.1.0"}
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem":"Debian",
+      "operatingsystemrelease":[ "8" ]
+    }
   ],
   "data_provider": null
 }
