@@ -1,0 +1,98 @@
+#!/usr/bin/env php
+<?php
+
+$clientId = "";
+$clientSecret = "";
+
+$username = "";
+$password = "";
+
+$redirectUrl = "https://www.example.com/local";
+$redirectEnc = urlencode($redirectUrl);
+
+$state = rand();
+
+$authRequest = "https://api.hubic.com/oauth/auth?client_id=$clientId&redirect_uri=$redirectEnc&scope=credentials.r&response_type=code&state=$state";
+
+$curl = curl_init($authRequest);
+
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
+curl_setopt($curl, CURLOPT_HEADER, false);
+
+$html = curl_exec($curl);
+
+if (!$html) {
+	print(curl_error($curl));
+	curl_close($curl);
+	exit(1);
+}
+
+$document = new DOMDocument();
+$document->loadHTML($html);
+
+$oauth = false;
+foreach($document->getElementsByTagName("input") as $input) {
+	if ($input->getAttribute("name") == "oauth")
+		$oauth = $input->getAttribute("value");
+}
+
+if (!$oauth) {
+	curl_close($curl);
+	print("Unable to find oauth value in returned html");
+	exit(1);
+}
+
+$fields = [
+	"credentials" => "r",
+	"oauth" => $oauth,
+	"action" => "accepted",
+	"account" => "r",
+	"login" => $username,
+	"user_pwd" => $password,
+];
+
+curl_setopt($curl, CURLOPT_HEADER, true);
+curl_setopt($curl, CURLOPT_URL, "https://api.hubic.com/oauth/auth/");
+curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
+curl_setopt($curl, CURLOPT_POST, 1);
+curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($fields) );
+
+$result = curl_exec($curl);
+curl_close($curl);
+
+if (!$result) {
+	print(curl_error($curl));
+	exit(1);
+}
+
+$headers = explode("\r\n", $result);
+$url = null;
+
+foreach($headers as $header) {
+	if(preg_match("/^Location: /", $header)) {
+		$url = substr($header, strlen("Location: "));
+	}
+}
+
+if (!$url) {
+	print("Unable to find redirect:");
+	print_r($headers);
+	exit(1);
+}
+
+$parts = parse_url($url);
+$query = [];
+// Warning, map has side effects:
+array_map(function($e) {
+		global $query;
+		$p = explode('=', $e);
+		$query[$p[0]] = urldecode($p[1]);
+	}, explode('&', $parts["query"]));
+
+if($query["state"] != $state) {
+	print("State doesn't match");
+	exit(1);
+}
+
+print($query["code"]);

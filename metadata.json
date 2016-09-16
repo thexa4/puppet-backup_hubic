@@ -1,0 +1,16 @@
+{
+  "name": "thexa4-backup_hubic",
+  "version": "0.1.0",
+  "author": "thexa4",
+  "summary": "Configures backups using Hubic",
+  "license": "MIT",
+  "source": "https://github.com/thexa4/puppet-backup_hubic",
+  "project_page": "https://github.com/thexa4/puppet-backup_hubic",
+  "issues_url": "https://github.com/thexa4/puppet-backup_hubic/issues",
+  "dependencies": [
+    {"name":"thexa4-pki","version_requirement":">= 0.1.0"},
+    {"name":"thexa4-backup","version_requirement":">= 0.1.0"}
+  ],
+  "data_provider": null
+}
+
