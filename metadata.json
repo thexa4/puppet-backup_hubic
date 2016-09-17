@@ -1,6 +1,6 @@
 {
   "name": "thexa4-backup_hubic",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "thexa4",
   "summary": "Configures backups using Hubic",
   "license": "MIT",

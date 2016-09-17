@@ -6,6 +6,9 @@ class backup_hubic(
   $cert = '/etc/ssl/certs/host.crt',
   $key = '/etc/ssl/private/host.key',
 ){
+
+  include ::backup
+
   if (!defined(File['/opt/max'])) {
     file { '/opt/max':
       ensure => directory,
